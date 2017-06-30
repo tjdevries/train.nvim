@@ -1,7 +1,7 @@
 
 let s:up_down_motions = {
       \ 'basic': [ 'k', 'j', 'h', 'l', 'gg'],
-      \ 'intermediate': ['-', '+'],
+      \ 'intermediate': ['M', 'H', 'L'],
       \ 'advanced': [],
       \ }
 
@@ -102,10 +102,7 @@ function! train#show_matches(motions, ...) abort
   let positions_found = []
 
   " Cache the eventignore value
-  let ignore_var = &eventignore
-
-  " Ignore all events while we're moving around
-  set eventignore=all
+  call s:cache_nvim_option('eventignore', 'all)
 
   " Move through each motion
   for motion in a:motions
@@ -148,7 +145,7 @@ function! train#show_matches(motions, ...) abort
   endfor
 
   call setpos('.', save_cursor)
-  execute('set eventignore=' . ignore_var)
+  call s:uncache_nvim_option('eventignore')
 endfunction
 
 

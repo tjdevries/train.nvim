@@ -2,10 +2,12 @@
 ================================================================================
 Configuration Options:                                       *train.vim-options*
 
-conceal_override....................................*train.vim.conceal_override*
+training_set............................................*train.vim.training_set*
+
+conceal......................................................*train.vim.conceal*
 
 
-conceal_override.conceallevel          *train.vim.conceal_override.conceallevel*
+conceal.level                                          *train.vim.conceal.level*
 
   Type: |Number|
   Default: `1`
@@ -13,13 +15,13 @@ conceal_override.conceallevel          *train.vim.conceal_override.conceallevel*
   (Integer): The conceal level to set during training
 
   To configure:
-    `call train#conf#set("conceal_override", "conceallevel", <value>)`
+    `call train#conf#set("conceal", "level", <value>)`
 
   To view:
-    `call train#conf#get("conceal_override", "conceallevel")`
+    `call train#conf#get("conceal", "level")`
 
 
-conceal_override.concealcursor        *train.vim.conceal_override.concealcursor*
+conceal.cursor                                        *train.vim.conceal.cursor*
 
   Type: |String|
   Default: `n`
@@ -27,13 +29,13 @@ conceal_override.concealcursor        *train.vim.conceal_override.concealcursor*
   (String): The conceal cursor setting to use during training
 
   To configure:
-    `call train#conf#set("conceal_override", "concealcursor", <value>)`
+    `call train#conf#set("conceal", "cursor", <value>)`
 
   To view:
-    `call train#conf#get("conceal_override", "concealcursor")`
+    `call train#conf#get("conceal", "cursor")`
 
 
-conceal_override.apply_overrides    *train.vim.conceal_override.apply_overrides*
+conceal.override                                    *train.vim.conceal.override*
 
   Type: |Bool|
   Default: `v:true`
@@ -41,15 +43,59 @@ conceal_override.apply_overrides    *train.vim.conceal_override.apply_overrides*
   (Boolean): If false, conceal options will not be overridden
 
   To configure:
-    `call train#conf#set("conceal_override", "apply_overrides", <value>)`
+    `call train#conf#set("conceal", "override", <value>)`
 
   To view:
-    `call train#conf#get("conceal_override", "apply_overrides")`
+    `call train#conf#get("conceal", "override")`
 
-input_options..........................................*train.vim.input_options*
+vertical....................................................*train.vim.vertical*
 
 
-input_options.remap                              *train.vim.input_options.remap*
+vertical.basic                                        *train.vim.vertical.basic*
+
+  Type: |List|
+  Default: `['k', 'j', 'h', 'l', 'gg']`
+
+  (string[]): List of basic vertical motions
+
+  To configure:
+    `call train#conf#set("vertical", "basic", <value>)`
+
+  To view:
+    `call train#conf#get("vertical", "basic")`
+
+
+vertical.advanced                                  *train.vim.vertical.advanced*
+
+  Type: |List|
+  Default: `[]`
+
+  (string[]): List of advanced vertical motions
+
+  To configure:
+    `call train#conf#set("vertical", "advanced", <value>)`
+
+  To view:
+    `call train#conf#get("vertical", "advanced")`
+
+
+vertical.intermediate                          *train.vim.vertical.intermediate*
+
+  Type: |List|
+  Default: `['M', 'H', 'L']`
+
+  (string[]): List of intermediate vertical motions
+
+  To configure:
+    `call train#conf#set("vertical", "intermediate", <value>)`
+
+  To view:
+    `call train#conf#get("vertical", "intermediate")`
+
+input..........................................................*train.vim.input*
+
+
+input.remap                                              *train.vim.input.remap*
 
   Type: |Bool|
   Default: `v:true`
@@ -57,13 +103,13 @@ input_options.remap                              *train.vim.input_options.remap*
   (Boolean): Should remap the input
 
   To configure:
-    `call train#conf#set("input_options", "remap", <value>)`
+    `call train#conf#set("input", "remap", <value>)`
 
   To view:
-    `call train#conf#get("input_options", "remap")`
+    `call train#conf#get("input", "remap")`
 
 
-input_options.no_mark                          *train.vim.input_options.no_mark*
+input.no_mark                                          *train.vim.input.no_mark*
 
   Type: |Bool|
   Default: `v:false`
@@ -71,19 +117,29 @@ input_options.no_mark                          *train.vim.input_options.no_mark*
   (Boolean): Whether a mark should be set or not during training
 
   To configure:
-    `call train#conf#set("input_options", "no_mark", <value>)`
+    `call train#conf#set("input", "no_mark", <value>)`
 
   To view:
-    `call train#conf#get("input_options", "no_mark")`
+    `call train#conf#get("input", "no_mark")`
 
 
 ================================================================================
 Configuration Functions:                                   *train.vim-functions*
 
+                                                         *train#conf#version(()*
+train#conf#version()
+    Get the version for this plugin
+    Returns a semver dict
+
                                                    *train#conf#generate_docs(()*
 train#conf#generate_docs()
     Returns a list of lines to be placed in your documentation
     Can use :call append(line("%"), func())
+
+                                                           *train#conf#debug(()*
+train#conf#debug()
+    Print a debug statement containing information about the plugin
+    and the versions of required plugins
 
                                                             *train#conf#menu(()*
 train#conf#menu()
@@ -95,11 +151,6 @@ train#conf#require(semver)
     Require a version of this plugin.
     Returns false if not a high enough version
 
-                                                           *train#conf#debug(()*
-train#conf#debug()
-    Print a debug statement containing information about the plugin
-    and the versions of required plugins
-
                                                              *train#conf#set(()*
 train#conf#set(area, setting, value)
     Set a "value" for the "area.setting"
@@ -108,21 +159,16 @@ train#conf#set(area, setting, value)
                                                              *train#conf#get(()*
 train#conf#get(area, setting)
     Get the "value" for the "area.setting"
-    See |conf.get_setting}
-
-                                                     *train#conf#insert_docs(()*
-train#conf#insert_docs()
-    Insert the generated docs under where you cursor is
-
-                                                         *train#conf#version(()*
-train#conf#version()
-    Get the version for this plugin
-    Returns a semver dict
+    See |conf.get_setting|
 
                                                             *train#conf#view(()*
 train#conf#view()
     View the current configuration dictionary.
     Useful for debugging
+
+                                                     *train#conf#insert_docs(()*
+train#conf#insert_docs()
+    Insert the generated docs under where you cursor is
 
 
 

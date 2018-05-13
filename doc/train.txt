@@ -1,0 +1,129 @@
+
+================================================================================
+Configuration Options:                                       *train.vim-options*
+
+conceal_override....................................*train.vim.conceal_override*
+
+
+conceal_override.conceallevel          *train.vim.conceal_override.conceallevel*
+
+  Type: |Number|
+  Default: `1`
+
+  (Integer): The conceal level to set during training
+
+  To configure:
+    `call train#conf#set("conceal_override", "conceallevel", <value>)`
+
+  To view:
+    `call train#conf#get("conceal_override", "conceallevel")`
+
+
+conceal_override.concealcursor        *train.vim.conceal_override.concealcursor*
+
+  Type: |String|
+  Default: `n`
+
+  (String): The conceal cursor setting to use during training
+
+  To configure:
+    `call train#conf#set("conceal_override", "concealcursor", <value>)`
+
+  To view:
+    `call train#conf#get("conceal_override", "concealcursor")`
+
+
+conceal_override.apply_overrides    *train.vim.conceal_override.apply_overrides*
+
+  Type: |Bool|
+  Default: `v:true`
+
+  (Boolean): If false, conceal options will not be overridden
+
+  To configure:
+    `call train#conf#set("conceal_override", "apply_overrides", <value>)`
+
+  To view:
+    `call train#conf#get("conceal_override", "apply_overrides")`
+
+input_options..........................................*train.vim.input_options*
+
+
+input_options.remap                              *train.vim.input_options.remap*
+
+  Type: |Bool|
+  Default: `v:true`
+
+  (Boolean): Should remap the input
+
+  To configure:
+    `call train#conf#set("input_options", "remap", <value>)`
+
+  To view:
+    `call train#conf#get("input_options", "remap")`
+
+
+input_options.no_mark                          *train.vim.input_options.no_mark*
+
+  Type: |Bool|
+  Default: `v:false`
+
+  (Boolean): Whether a mark should be set or not during training
+
+  To configure:
+    `call train#conf#set("input_options", "no_mark", <value>)`
+
+  To view:
+    `call train#conf#get("input_options", "no_mark")`
+
+
+================================================================================
+Configuration Functions:                                   *train.vim-functions*
+
+                                                   *train#conf#generate_docs(()*
+train#conf#generate_docs()
+    Returns a list of lines to be placed in your documentation
+    Can use :call append(line("%"), func())
+
+                                                            *train#conf#menu(()*
+train#conf#menu()
+    Provide the user with an automatic "quickmenu"
+    See |conf.menu|
+
+                                                         *train#conf#require(()*
+train#conf#require(semver)
+    Require a version of this plugin.
+    Returns false if not a high enough version
+
+                                                           *train#conf#debug(()*
+train#conf#debug()
+    Print a debug statement containing information about the plugin
+    and the versions of required plugins
+
+                                                             *train#conf#set(()*
+train#conf#set(area, setting, value)
+    Set a "value" for the "area.setting"
+    See |conf.set_setting|
+
+                                                             *train#conf#get(()*
+train#conf#get(area, setting)
+    Get the "value" for the "area.setting"
+    See |conf.get_setting}
+
+                                                     *train#conf#insert_docs(()*
+train#conf#insert_docs()
+    Insert the generated docs under where you cursor is
+
+                                                         *train#conf#version(()*
+train#conf#version()
+    Get the version for this plugin
+    Returns a semver dict
+
+                                                            *train#conf#view(()*
+train#conf#view()
+    View the current configuration dictionary.
+    Useful for debugging
+
+
+
+ vim:tw=78:ts=2:sts=2:sw=2:ft=help:norl:

@@ -37,9 +37,9 @@ function! s:uncache_nvim_option(option) abort
 endfunction
 
 function! train#_set_up() abort
-  if train#opt#get('override_conceal_opts')
-    call s:cache_nvim_option('conceallevel', train#opt#get('conceallevel'))
-    call s:cache_nvim_option('concealcursor', train#opt#get('concealcursor'))
+  if train#conf#get('conceal', 'override')
+    call s:cache_nvim_option('conceallevel', train#conf#get('conceal', 'level'))
+    call s:cache_nvim_option('concealcursor', train#conf#get('conceal', 'cursor'))
   endif
 endfunction
 
@@ -66,7 +66,7 @@ function! train#_opt_string(opts) abort
   if has_key(a:opts, 'remap')
     let remap_keys = a:opts.remap
   else
-    let remap_keys = train#opt#get('remap')
+    let remap_keys = train#conf#get('input', 'remap')
   endif
 
   let opt_string = ''
@@ -95,14 +95,14 @@ function! train#show_matches(motions, ...) abort
   " Get the current position
   let save_cursor = getcurpos()
 
-  if !train#opt#get('no_mark')
+  if !train#conf#get('input', 'no_mark')
     call execute('normal! mt')
   endif
 
   let positions_found = []
 
   " Cache the eventignore value
-  call s:cache_nvim_option('eventignore', 'all)
+  call s:cache_nvim_option('eventignore', 'all')
 
   " Move through each motion
   for motion in a:motions

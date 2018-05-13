@@ -2,6 +2,20 @@
 
 Train yourself with vim motions and make your own train tracks :)
 
+
+# Installation
+
+You'll need two of my plugins to run this, since I spend too much time modularizing plugins :)
+
+```vim
+Plug 'tjdevries/std.vim'
+Plug 'tjdevries/conf.vim'
+Plug 'tjdevries/train.vim'
+
+" Optional, to get really cool menus :)
+Plug 'skywind3000/quickmenu.vim'
+```
+
 ## Still Under Construction :smile:
 
 TODO:

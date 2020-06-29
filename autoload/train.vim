@@ -41,7 +41,9 @@ function! train#_uncache_vim_option(option) abort
 endfunction
 
 function! train#_opt_string() abort
-  let remap_keys = train#conf#get('input', 'remap')
+  " TODO: Could add configuration value here?
+  "         But I don't know why you wouldn't want to remap them.
+  let remap_keys = v:true
 
   let opt_string = ''
 

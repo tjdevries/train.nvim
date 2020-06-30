@@ -15,6 +15,18 @@ Does not work on Vim, due to incompatible floating window APIs.
 Plug 'tjdevries/train.nvim'
 ```
 
+# Built-in Commands
+
+```vim
+" Train for movements up and down
+:TrainUpDown
+
+" Train for movements related to words
+:TrainWord
+
+" Train for movements related to text objects
+:TrainTextObj
+```
 
 ## Still Under Construction :smile:
 

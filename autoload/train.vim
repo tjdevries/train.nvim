@@ -1,24 +1,4 @@
 
-" TODO: Clean these up and remove TESTER
-
-let s:up_down_motions = {
-      \ 'basic': [ 'k', 'j', 'h', 'l', 'gg'],
-      \ 'intermediate': ['M', 'H', 'L'],
-      \ 'advanced': [],
-      \ }
-
-let s:word_motions = {
-      \ 'basic': ['w', 'W', 'e', 'E', 'b', 'B'],
-      \ 'intermediate': ['ge', 'gE'],
-      \ 'advanced': [],
-      \ }
-
-let s:text_object_motions = {
-      \ 'basic': ['(', ')', '{', '}'],
-      \ 'intermediate': [']]', '][', '[[', '[]'],
-      \ 'advanced': [],
-      \ }
-
 " TODO: Add code fold movements
 
 " Create a list of match_ids that we can use to clear them later
@@ -56,11 +36,6 @@ function! train#_opt_string() abort
   return opt_string
 endfunction
 
-" TODO: Include count as an option
-function! train#show_matches(motions, ...) abort
-  call luaeval("require('train').show_matches(_A)", a:motions)
-endfunction
-
 function! s:convert_group(level) abort
   if a:level == 'basic'
     return 1
@@ -76,6 +51,14 @@ function! s:convert_group(level) abort
 
   return 4
 endfunction
+
+function! train#show_matches(motions, ...) abort
+  call luaeval("require('train').show_matches(_A)", a:motions)
+endfunction
+
+" My test string is this string
+" It spans multiple lines
+" and it helps me to see things
 
 function! train#convert_group(group, max_level) abort
   let level = s:convert_group(a:max_level)
@@ -93,14 +76,5 @@ function! train#convert_group(group, max_level) abort
 endfunction
 
 
-function! TESTER() abort
-  let motions = s:text_object_motions.basic
-  let motions += s:text_object_motions.intermediate
-  let motions += s:word_motions.intermediate
 
-  return train#show_matches(motions, {'remap': v:true})
-endfunction
 
-" My test string is this string
-" It spans multiple lines
-" and it helps me to see things

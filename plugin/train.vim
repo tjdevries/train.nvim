@@ -24,4 +24,6 @@ let g:train_motion_groups.text_obj = {
 command! TrainClear :lua require('train').clear_matches()
 
 command! TrainUpDown :call train#show_matches(train#convert_group(g:train_motion_groups.up_down, 'advanced'))
+command! TrainWord :call train#show_matches(train#convert_group(g:train_motion_groups.word, 'advanced'))
+command! TrainTextObj :call train#show_matches(train#convert_group(g:train_motion_groups.text_obj, 'advanced'))
 

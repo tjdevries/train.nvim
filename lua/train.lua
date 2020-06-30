@@ -59,9 +59,11 @@ end
 function train.perform_motion(motion)
   local feedkey_mode = vim.fn['train#_opt_string']()
 
-  -- TODO: Is there any time I should escape?
-  --        How do I know when I should? Or is it just always.
-  vim.api.nvim_feedkeys(motion, feedkey_mode, false)
+  vim.api.nvim_feedkeys(
+    vim.api.nvim_replace_termcodes(motion, true, true, true),
+    feedkey_mode,
+    true
+  )
 
   return vim.fn.getcurpos()
 end
@@ -75,11 +77,11 @@ function train.show_motion(resulting_positions, position, motion, pulse)
 
   -- Check if any resulting positions start in the same place.
   for _, existing_position in ipairs(resulting_positions) do
-    if existing_position== position then
+    if existing_position == position then
       return
     end
 
-    if existing_position[2] == position[2] 
+    if existing_position[2] == position[2]
         and existing_position[3] == position[3] then
       return
     end

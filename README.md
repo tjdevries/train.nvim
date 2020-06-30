@@ -28,6 +28,12 @@ Plug 'tjdevries/train.nvim'
 :TrainTextObj
 ```
 
+# Add your own train tracks
+
+```vim
+call train#show_matches(['w', 'j', ']]', '[['])
+```
+
 ## Still Under Construction :smile:
 
 TODO:

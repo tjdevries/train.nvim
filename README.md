@@ -2,6 +2,8 @@
 
 Train yourself with vim motions and make your own train tracks :)
 
+![example](./media/example.gif)
+
 
 # Installation
 
@@ -12,6 +14,7 @@ Does not work on Vim, due to incompatible floating window APIs.
 ```vim
 Plug 'tjdevries/train.nvim'
 ```
+
 
 ## Still Under Construction :smile:
 

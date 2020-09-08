@@ -12,9 +12,6 @@ Tested on nvim-0.4.3+
 Does not work on Vim, due to incompatible floating window APIs.
 
 ```vim
-" If you want to use cool floating window additions, you'll need
-Plug 'nvim-lua/plenary.nvim'
-
 " Required
 Plug 'tjdevries/train.nvim'
 ```

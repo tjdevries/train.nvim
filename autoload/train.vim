@@ -1,6 +1,4 @@
 
-" TODO: Add code fold movements
-
 " Create a list of match_ids that we can use to clear them later
 let s:list_of_match_ids = get(s:, 'list_of_match_ids', [])
 

@@ -1,9 +1,13 @@
-local p_float = require('plenary.window.float')
+local ok, p_float = pcall(require, 'plenary.window.float')
 
 local t_window = {}
 
 -- TODO: Do we even need to see the motions on this side.
 t_window.oneshot_motions = function(bufnr)
+  if not ok then
+    return 0
+  end
+
   local floatwin = p_float.percentage_range_window(
     {0.1, 0.8},
     0.8,

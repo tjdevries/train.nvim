@@ -31,7 +31,6 @@ package.loaded['train'] = nil
 -- Compat... {{{
 local log = require('train.log')
 local Motion = require('train.motion')
-local t_window = require('train.window')
 
 vim.fn = vim.fn or setmetatable({}, {
   __index = function(t, key)
@@ -199,7 +198,7 @@ function train.show_matches(raw_motions, mode)
   local win_id = vim.api.nvim_get_current_win()
   if mode == 'one_shot' then
     -- This puts us in the floating window.
-    win_id = t_window.oneshot_motions(vim.api.nvim_get_current_buf())
+    win_id = require('train.window').oneshot_motions(vim.api.nvim_get_current_buf())
   end
 
   -- TODO: We should really use the vim.api.nvim_win_get_cursor()

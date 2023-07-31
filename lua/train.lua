@@ -4,7 +4,6 @@
 --  - Read all the mappings you have that start w/ a pattern,
 --      and show all of them.
 
-
 -- Plan:
 --  1. Just do what we doing already
 --  2. Open a floating window.
@@ -26,22 +25,11 @@
 --  Pick some movements you want to learn
 --  nnoremap <space>l :call train_show#matches(['(', ')', ...])<CR>
 
-package.loaded['train'] = nil
+package.loaded["train"] = nil
 
--- Compat... {{{
-local log = require('train.log')
-local Motion = require('train.motion')
+local Motion = require "train.motion"
 
-vim.fn = vim.fn or setmetatable({}, {
-  __index = function(t, key)
-    local function _fn(...)
-      return vim.api.nvim_call_function(key, {...})
-    end
-    t[key] = _fn
-    return _fn
-  end
-})
--- }}}
+local ns = vim.api.nvim_create_namespace "train-nvim"
 
 -- Leaving the global check because when I re-source this file, we lose the match windows
 TrainMatchWindows = TrainMatchWindows or {}
@@ -64,42 +52,20 @@ function train.get_pulse_win_callback(timer, win_id, list_of_hls)
       index = #list_of_hls
     end
 
-    vim.api.nvim_win_set_option(
-      win_id,
-      'winhl',
-      string.format('Normal:%s', list_of_hls[index].higroup)
-    )
+    vim.wo[win_id].winhl = string.format("Normal:%s", list_of_hls[index].higroup)
   end)
 end
 
-function train.clear_matches(original_win_id, mode)
-  for _, win_id in ipairs(TrainMatchWindows) do
-    if vim.api.nvim_win_is_valid(win_id) then
-      vim.api.nvim_win_close(win_id, true)
-    end
-  end
-
-  if mode == 'one_shot' then
-    if vim.api.nvim_win_is_valid(original_win_id) then
-      vim.api.nvim_win_close(original_win_id, true)
-    end
-  end
-
-  -- TODO: Clean this up later
-  -- TrainMatchWindows = {}
+function train.clear_matches(bufnr)
+  vim.api.nvim_buf_clear_namespace(bufnr, ns, 0, -1)
 end
 
 --- Perform a motion and return new position.
 --@arg win_id number: The window ID that we're in currently.
 --@arg motion Motion: A Motion object.
 function train.perform_motion(win_id, motion)
-  local feedkey_mode = vim.fn['train#_opt_string']()
-
-  vim.api.nvim_feedkeys(
-    vim.api.nvim_replace_termcodes(motion.movement, true, true, true),
-    feedkey_mode,
-    true
-  )
+  local feedkey_mode = "mx"
+  vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(motion.movement, true, true, true), feedkey_mode, true)
 
   return vim.api.nvim_win_get_cursor(win_id)
 end
@@ -107,10 +73,7 @@ end
 --- Make a floating window at the location for the position.
 --- It should register it's floating window so we can clear it later.
 --@param cursor: result from nvim_win_get_cursor() (row, col)
-function train.show_motion(win_id, resulting_cursors, cursor, motion, pulse)
-  log.trace("show_motion | win_id: %s", win_id)
-  log.trace("show_motion | win_id: %s", vim.fn.win_getid())
-
+function train.show_motion(bufnr, resulting_cursors, cursor, motion, pulse)
   -- TODO:
   --    Check if the windows scroll with you as you scroll.
 
@@ -120,8 +83,7 @@ function train.show_motion(win_id, resulting_cursors, cursor, motion, pulse)
       return
     end
 
-    if existing_cursor[1] == cursor[1]
-        and existing_cursor[2] == cursor[2] then
+    if existing_cursor[1] == cursor[1] and existing_cursor[2] == cursor[2] then
       return
     end
   end
@@ -129,82 +91,25 @@ function train.show_motion(win_id, resulting_cursors, cursor, motion, pulse)
   local row = cursor[1] - 1
   local col = cursor[2]
 
-  local win_position = vim.api.nvim_win_get_position(win_id)
-
-  local use_buf_position = true
-  local window_opts
-  if use_buf_position then
-    window_opts = {
-      relative = 'win',
-      win = win_id,
-      bufpos = {row, col},
-      width = string.len(motion.movement),
-      height = 1,
-      row = 0,
-      col = 0,
-      focusable = false,
-      style = 'minimal',
-    }
-  else
-    window_opts = {
-      relative = 'editor',
-      width = string.len(motion.movement),
-      height = 1,
-      row = win_position[1] + row,
-      col = win_position[2] + col,
-      focusable = false,
-      style = 'minimal',
-    }
-  end
-  log.trace("show_motion | resulting window_opts: %s", vim.inspect(window_opts))
-
-  local buf = vim.api.nvim_create_buf(false, true)
-  vim.api.nvim_buf_set_lines(buf, 0, -1, true, {motion.movement})
-
-  local new_win_id = vim.api.nvim_open_win(buf, false, window_opts)
-  -- TODO: Instead of just using error, you should do random ones
-  vim.api.nvim_win_set_option(new_win_id, 'winhl', 'Normal:Error')
+  vim.api.nvim_buf_set_extmark(bufnr, ns, row, col, {
+    virt_text = { { motion.movement, "Error" } },
+    virt_text_pos = "overlay",
+  })
 
   table.insert(resulting_cursors, cursor)
-  table.insert(TrainMatchWindows, new_win_id)
-
-  if pulse then
-    local timer = vim.loop.new_timer()
-    timer:start(
-      500,
-      500,
-      train.get_pulse_win_callback(timer, new_win_id, vim.g.train_highlight_pulses)
-      )
-  end
-
-  return win_id
 end
 
 --@param motions (table): List of motions to execute.
---@param mode (string): Available modes are:
---                          'in_buffer': Don't do anything crazy
---                          'one_shot': Open up a floating window w/ docs.
---                                      One movements quits you out.
-function train.show_matches(raw_motions, mode)
-  -- vim.cmd [[set nomodifiable]]
+function train.show_matches(raw_motions)
+  local bufnr = vim.api.nvim_get_current_buf()
+  local win_id = vim.api.nvim_get_current_win()
 
   local motions = {}
   for _, v in ipairs(raw_motions) do
     table.insert(motions, Motion:new(v))
   end
 
-  train.clear_matches()
-
-  local win_id = vim.api.nvim_get_current_win()
-  if mode == 'one_shot' then
-    -- This puts us in the floating window.
-    win_id = require('train.window').oneshot_motions(vim.api.nvim_get_current_buf())
-  end
-
-  -- TODO: We should really use the vim.api.nvim_win_get_cursor()
-  --        This will make sure we stay in the right window for all the movements
   local original_cursor = vim.api.nvim_win_get_cursor(win_id)
-  -- vim.fn['train#_cache_vim_option']('eventignore', 'all')
 
   -- Result of executing motions
   -- Names: potential_positions
@@ -216,46 +121,53 @@ function train.show_matches(raw_motions, mode)
     vim.api.nvim_win_set_cursor(win_id, original_cursor)
 
     local next_position = train.perform_motion(win_id, motion)
-    train.show_motion(win_id, resulting_positions, next_position, motion, true)
+    train.show_motion(bufnr, resulting_positions, next_position, motion, true)
   end
 
   local descriptions = {}
-  vim.tbl_map(function(v) table.insert(descriptions, v.description) end, motions)
+  vim.tbl_map(function(v)
+    table.insert(descriptions, v.description)
+  end, motions)
 
   vim.api.nvim_win_set_cursor(win_id, original_cursor)
-  -- vim.fn['train#_uncache_vim_option']('eventignore')
-
-  -- TODO: Add all the autocmds you can think of here!
-  vim.api.nvim_command(string.format(
-    [[autocmd CursorMoved,VimLeave,ExitPre,InsertEnter <buffer> ++once :lua require('train').clear_matches(%s, "%s")]],
-    win_id,
-    mode
-  ))
-
-  -- vim.cmd [[set modifiable]]
+  vim.api.nvim_create_autocmd({ "CursorMoved", "InsertEnter" }, {
+    buffer = 0,
+    callback = function()
+      train.clear_matches(bufnr)
+      return true
+    end,
+  })
 end
 
-function TrainExample()
-  RELOAD('train')
-  require('train').show_matches({'w', '$', '0', '^'})
+function train.convert(motions, level)
+  local results = {}
+
+  for _, value in pairs(motions) do
+    -- table.insert(results, value)
+    vim.list_extend(results, value)
+  end
+
+  return results
 end
 
-function OtherExample()
-  -- example_win = {
-  --    col = 1,
-  --    focusable = false,
-  --    height = 1,
-  --    relative = "win",
-  --    row = 17,
-  --    style = "minimal",
-  --    width = 1,
-  --    bufpos = {1, 1} }
+--[[
 
-  -- motion = 'w'
+function! s:convert_group(level) abort
+  if a:level == 'basic'
+    return 1
+  endif
 
-  -- buf = vim.api.nvim_create_buf(false, true)
-  -- vim.api.nvim_buf_set_lines(buf, 0, -1, true, {motion})
-  -- vim.api.nvim_open_win(buf, false, example_win)
-end
+  if a:level == 'intermediate'
+    return 2
+  endif
+
+  if a:level == 'advanced'
+    return 3
+  endif
+
+  return 4
+endfunction
+
+--]]
 
 return train
